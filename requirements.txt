@@ -1,0 +1,19 @@
+# Black Tie Orders - Python API Dependencies
+# For Vercel Python Serverless Functions
+
+# Google Sheets API
+google-api-python-client==2.111.0
+google-auth==2.25.2
+google-auth-oauthlib==1.2.0
+
+# Fuzzy matching
+rapidfuzz==3.5.2
+
+# Email
+sendgrid==6.11.0
+
+# Data processing
+pandas==2.1.4
+
+# HTTP/JSON
+httpx==0.25.2
