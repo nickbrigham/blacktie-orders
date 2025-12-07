@@ -60,6 +60,8 @@ class FlowhubProduct:
     sku: Optional[str] = None
     strain_name: Optional[str] = None
     supplier_name: Optional[str] = None
+    brand: Optional[str] = None
+    product_type: Optional[str] = None
     thc_percentage: Optional[float] = None
     cbd_percentage: Optional[float] = None
     price_cents: Optional[int] = None
@@ -208,6 +210,8 @@ class FlowhubClient:
             sku=item.get('sku'),
             strain_name=item.get('strainName'),
             supplier_name=item.get('supplierName'),
+            brand=item.get('brand') or item.get('brandName') or item.get('supplierName'),
+            product_type=item.get('type') or item.get('productType', ''),
             thc_percentage=thc,
             cbd_percentage=cbd,
             price_cents=item.get('preTaxPriceInPennies'),
@@ -305,56 +309,25 @@ def filter_bt_products(products: list[FlowhubProduct]) -> list[FlowhubProduct]:
     """
     Filter to only Black Tie production items.
     
-    Excludes third-party brands and accessories.
+    A product is in-house if:
+    1. brand is "Black Tie" or "Black Tie Cannabis"
+    2. OR type includes "House"
     """
-    # Categories that are BT production
-    bt_categories = {
-        'flower', 'concentrate', 'pre-roll', 'preroll', 'pre roll',
-        'cartridge', 'cart', 'vape', 'edible', 'tincture', 'topical'
-    }
-    
-    # Skip these categories entirely
-    skip_categories = {
-        'accessory', 'accessories', 'glass', 'apparel', 'battery',
-        'merchandise', 'merch', 'gear', 'misc', 'other'
-    }
-    
-    # Third-party brand/supplier patterns to exclude
-    third_party_patterns = [
-        'bs trees', 'bstrees', 'budard', 'casco', 'crooked jaw',
-        'dabilitated', 'dialed in', 'ekko', 'fish meadow', 'fraktal',
-        'harbor', 'hilltop', 'iron lung', 'laughing lobster', 'leaf labs',
-        'lookah', 'lost mary', 'maine concentrates', 'medible', 'mojo',
-        'new horizons', 'northern terps', 'peace of maine', 'pot & pan',
-        'puffco', 'recovery', 'refine', 'secret stash', 'sireel',
-        'terra horta', 'fresh canna', 'brick house', 'cadillac pre'
-    ]
-    
     filtered = []
     
     for product in products:
-        category = product.category.lower().strip()
-        product_name = product.name.lower()
-        supplier = (product.supplier_name or '').lower()
+        brand = (product.brand or '').lower().strip()
+        product_type = (product.product_type or '').lower()
+        category = (product.category or '').lower()
         
-        # Skip non-cannabis categories
-        if category in skip_categories:
-            continue
+        # Check if brand is Black Tie
+        is_bt_brand = brand in ['black tie', 'black tie cannabis']
         
-        # Check if category matches BT production
-        category_match = any(bt in category for bt in bt_categories)
-        if not category_match:
-            continue
+        # Check if type includes "House"
+        is_house_type = 'house' in product_type or 'house' in category
         
-        # Skip third-party brands (check name and supplier)
-        is_third_party = any(
-            tp in product_name or tp in supplier 
-            for tp in third_party_patterns
-        )
-        if is_third_party:
-            continue
-        
-        filtered.append(product)
+        if is_bt_brand or is_house_type:
+            filtered.append(product)
     
     return filtered
 

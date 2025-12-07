@@ -48,6 +48,8 @@ class handler(BaseHTTPRequestHandler):
                             'name': p.name,
                             'parent_name': p.parent_name,
                             'type': p.category,
+                            'product_type': p.product_type,
+                            'brand': p.brand,
                             'quantity': p.quantity,
                             'unit': p.unit,
                             'sku': p.sku,
@@ -79,6 +81,8 @@ class handler(BaseHTTPRequestHandler):
                                     'name': p.name,
                                     'parent_name': p.parent_name,
                                     'type': p.category,
+                                    'product_type': p.product_type,
+                                    'brand': p.brand,
                                     'quantity': p.quantity,
                                     'unit': p.unit
                                 }
