@@ -81,12 +81,36 @@ class ProductMatcher:
         
         return n
     
-    def get_production_category(self, pos_type: str) -> Optional[str]:
-        """Map POS product type to production category"""
-        if not pos_type:
-            return None
-        return self.POS_TYPE_MAP.get(pos_type.lower().strip())
-    
+    def get_production_category(self, pos_type: str, pos_name: str = "") -> Optional[str]:
+        """Map POS product to category. Name takes precedence over type."""
+        name_lower = pos_name.lower()
+        
+        # Check name first
+        if "badder" in name_lower or "baller" in name_lower:
+            return "Badder"
+        if "shatter" in name_lower:
+            return "Shatter"
+        if "sugar" in name_lower:
+            return "Sugar"
+        if "live resin" in name_lower:
+            return "Live Resin"
+        if "rosin" in name_lower:
+            return "Rosin"
+        if "diamond" in name_lower:
+            return "Diamonds"
+        if "preroll" in name_lower or "pre roll" in name_lower or "pre-roll" in name_lower:
+            return "Prerolls"
+        if "cart" in name_lower or "full spec" in name_lower:
+            return "Full Spec Oil"
+        
+        # Check type second
+        if pos_type:
+            mapped = self.POS_TYPE_MAP.get(pos_type.lower().strip())
+            if mapped:
+                return mapped
+        
+        # Default to Flower
+        return "Flower"
     def match_product(
         self,
         pos_name: str,
@@ -107,7 +131,7 @@ class ProductMatcher:
             MatchResult with best match details
         """
         pos_norm = self.normalize(pos_name)
-        pos_category = self.get_production_category(pos_type)
+        pos_category = self.get_production_category(pos_type, pos_name)
         
         # Check confirmed matches first
         if pos_norm in self.confirmed_matches:
