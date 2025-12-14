@@ -111,6 +111,7 @@ class ProductMatcher:
         
         # Default to Flower
         return "Flower"
+    
     def match_product(
         self,
         pos_name: str,
@@ -149,12 +150,11 @@ class ProductMatcher:
                         confidence='auto'
                     )
         
-        # Filter to same category if we have one
-        candidates = production_products
+        # Filter to same category - no fallback to other categories
         if pos_category:
-            same_cat = [p for p in production_products if p.get('category') == pos_category]
-            if same_cat:
-                candidates = same_cat
+            candidates = [p for p in production_products if p.get('category') == pos_category]
+        else:
+            candidates = production_products
         
         # Find best match
         best_match = None
